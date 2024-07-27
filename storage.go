@@ -4,15 +4,7 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	"google.golang.org/api/option"
-	"io"
-	"net/http"
 )
-
-type Storage interface {
-	Save(fileName string, file io.ReadCloser) (string, int64, error)
-	Delete(path string) error
-	Open(name string) (http.File, error)
-}
 
 func GetStorageClient(ctx context.Context) (*storage.Client, error) {
 	cfg, err := getConfig()
@@ -28,11 +20,11 @@ func GetStorageClient(ctx context.Context) (*storage.Client, error) {
 	return storage.NewClient(ctx, opts...)
 }
 
-func New() (Storage, error) {
+func New() (*Client, error) {
 	s, err := GetStorageClient(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
-	return &client{s: s}, nil
+	return &Client{s: s}, nil
 }

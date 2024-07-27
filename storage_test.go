@@ -14,7 +14,7 @@ import (
 
 type StorageTestSuite struct {
 	suite.Suite
-	c      Storage
+	c      *Client
 	bucket string
 }
 

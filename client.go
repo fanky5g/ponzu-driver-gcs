@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-type client struct {
+type Client struct {
 	s *storage.Client
 }
 
 // Open serves directly a file. In the future, we will try to support generating signed links and redirecting,
 // so we don't have to stream the file (at a performance cost). The format for the name of the file is
 // bucket/path/to/file.ext
-func (c *client) Open(name string) (http.File, error) {
+func (c *Client) Open(name string) (http.File, error) {
 	bucket, key, err := parsePath(name)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (c *client) Open(name string) (http.File, error) {
 }
 
 // Save saves a file to storage. Argument name must be of the syntax bucket/path/to/file.ext
-func (c *client) Save(name string, file io.ReadCloser) (string, int64, error) {
+func (c *Client) Save(name string, file io.ReadCloser) (string, int64, error) {
 	bucket, key, err := parsePath(name)
 	if err != nil {
 		return "", 0, err
@@ -57,7 +57,7 @@ func (c *client) Save(name string, file io.ReadCloser) (string, int64, error) {
 	return strings.Join([]string{bucket, key}, "/"), written, nil
 }
 
-func (c *client) Delete(name string) error {
+func (c *Client) Delete(name string) error {
 	bucket, key, err := parsePath(name)
 	if err != nil {
 		return err
