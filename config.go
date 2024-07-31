@@ -10,10 +10,12 @@ import (
 
 type Config struct {
 	ServiceAccountFile string
+	Bucket             string
 }
 
 func defineFlags(flagSet *flag.FlagSet) {
 	flagSet.String("gcs_service_account", "", "Service Account Credential File for GCS access.")
+	flagSet.String("gcs_bucket", "", "GCS bucket to use. If not set, path of file must be prepended with bucket name.")
 }
 
 func getConfig() (*Config, error) {
@@ -47,5 +49,6 @@ func getConfig() (*Config, error) {
 
 	return &Config{
 		ServiceAccountFile: viper.GetString("gcs_service_account"),
+		Bucket:             viper.GetString("gcs_bucket"),
 	}, nil
 }

@@ -18,13 +18,22 @@ func parsePath(p string) (string, string, error) {
 		return u.Host, trimPath(u.Path), nil
 	}
 
-	paths := strings.SplitN(u.Path, "/", 2)
-	if len(paths) != 2 {
-		return "", "", ErrInvalidPath
+	cfg, err := getConfig()
+	if err != nil {
+		return "", "", err
 	}
 
-	bucket, key := paths[0], paths[1]
-	return trimPath(bucket), trimPath(key), nil
+	if cfg.Bucket != "" {
+		return trimPath(cfg.Bucket), trimPath(u.Path), nil
+	}
+
+	paths := strings.SplitN(u.Path, "/", 2)
+	if len(paths) == 2 {
+		bucket, key := paths[0], paths[1]
+		return trimPath(bucket), trimPath(key), nil
+	}
+
+	return "", "", ErrInvalidPath
 }
 
 func trimPath(p string) string {

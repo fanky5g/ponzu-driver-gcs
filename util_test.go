@@ -1,13 +1,36 @@
 package storage
 
 import (
+	"os"
+	"strings"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type UtilTestSuite struct {
 	suite.Suite
+}
+
+func (s *UtilTestSuite) SetupTest() {
+	omitArg := func(argName string, args []string) []string {
+		for i := range args {
+			splitArgs := strings.Split(args[i], "=")
+			if len(splitArgs) != 2 {
+				continue
+			}
+
+			name := splitArgs[0]
+			if name == argName {
+				return append(args[:i], args[i+1:]...)
+			}
+		}
+
+		return args
+	}
+
+	os.Args = omitArg("--gcs_bucket", os.Args)
 }
 
 func (s *UtilTestSuite) TestParsePathWithGSPathSyntax() {
@@ -37,6 +60,16 @@ func (s *UtilTestSuite) TestParsePathWithNestedBucketAndKey() {
 func (s *UtilTestSuite) TestParsePathThrowsErrorForInvalidPaths() {
 	_, _, err := parsePath("test_file.pdf")
 	assert.EqualError(s.T(), err, ErrInvalidPath.Error())
+}
+
+func (s *UtilTestSuite) TestParsePathAppendsGCSBucketIfSet() {
+	os.Args = append(os.Args, "--gcs_bucket=my-bucket")
+
+	bucket, path, err := parsePath("test_file.pdf")
+	if assert.NoError(s.T(), err) {
+		assert.Equal(s.T(), bucket, "my-bucket")
+		assert.Equal(s.T(), path, "test_file.pdf")
+	}
 }
 
 func TestUtils(t *testing.T) {

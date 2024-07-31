@@ -13,8 +13,8 @@ type Client struct {
 	s *storage.Client
 }
 
-// Open serves directly a file. In the future, we will try to support generating signed links and redirecting,
-// so we don't have to stream the file (at a performance cost). The format for the name of the file is
+// Open serves directly a file. In the future, we will support generating signed links and redirecting,
+// so we don't have to stream the file (at a performance and data streaming cost). The format for the name of the file is
 // bucket/path/to/file.ext
 func (c *Client) Open(name string) (http.File, error) {
 	bucket, key, err := parsePath(name)
